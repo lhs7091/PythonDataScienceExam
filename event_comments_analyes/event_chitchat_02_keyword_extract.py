@@ -210,4 +210,28 @@ df["bcluster"] = predict
 
 # pre-check
 # print(df[df["bcluster"] == 15].head(5))
-print(df.loc[df["bcluster"] == 15, ["bcluster", "cluster", "course"]].head(10))
+# print(df.loc[df["bcluster"] == 15, ["bcluster", "cluster", "course"]].head(10))
+
+from wordcloud import WordCloud
+
+# we want to except specific words
+stopwords = ["관심 강의", "관심강의", "관심", "강의", "강좌", "강의를",
+             "올해", "올해는", "열심히", "공부를", "합니다", "하고", "싶어요",
+             "있는", "있습니다", "싶습니다", "2020년"]
+
+
+def displayWordCloud(data=None, backgroundcolor='white', width=1280, height=768):
+    wordcloud = WordCloud(
+        font_path = '/Library/Fonts/NanumGothicExtraBold.otf',
+        stopwords = stopwords,
+        background_color = backgroundcolor,
+        width = width, height = height).generate(data)
+
+    plt.figure(figsize=(15,10))
+    plt.imshow(wordcloud)
+    plt.axis('off')
+    plt.show()
+
+
+course_text = " ".join(df["course"])
+displayWordCloud(course_text)
