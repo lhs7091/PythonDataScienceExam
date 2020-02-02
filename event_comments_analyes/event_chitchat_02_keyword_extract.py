@@ -141,8 +141,73 @@ tfidf_freq = pd.DataFrame(feature_tfidf.toarray(), columns=vocab)
 
 df_tfidf = pd.DataFrame(tfidf_freq.sum())
 df_tfidf_top = df_tfidf.sort_values(by=0, ascending=False)
-print(df_tfidf_top.head())
+# print(df_tfidf_top.head())
+
+'''
+Clustering
+    - K-Means
+    - MiniBatchKMeans
+https://scikit-learn.org/stable/auto_examples/cluster/plot_mini_batch_kmeans.html
+'''
+from sklearn.cluster import KMeans
+from tqdm import trange
+
+'''
+# check how many clusters we need.
+inertia = []
+
+start = 10
+end = 50
 
 
+for i in trange(start, end):
+    cls = KMeans(n_clusters=i, random_state=42)
+    cls.fit(feature_vector)
+    inertia.append(cls.inertia_)
+plt.plot(range(start,end), inertia)
+plt.title("KMeans clustering")
+plt.show()
+'''
+n_clusters = 60
+cls = KMeans(n_clusters=n_clusters, random_state=42)
+cls.fit(feature_vector)
+predict = cls.predict(feature_vector)
+df["cluster"] = predict
+'''
+print(df["cluster"].value_counts().head(10))
+0     1672
+33      85
+22      44
+31      41
+44      34
+5       33
+30      30
+14      29
+1       29
+11      28
+Name: cluster, dtype: int64
+'''
+# clustering by MiniBatchKMeans
+from sklearn.cluster import MiniBatchKMeans
+'''
+b_inertia = []
+# check how many clusters we need.
+start = 10
+end = 50
+for i in trange(start, end):
+    cls = MiniBatchKMeans(n_clusters=i, random_state=42)
+    cls.fit(feature_vector)
+    b_inertia.append(cls.inertia_)
+plt.plot(range(start,end), b_inertia)
+plt.title("KMeans clustering")
+plt.show()
+'''
+cls = MiniBatchKMeans(n_clusters=n_clusters, random_state=42)
+cls.fit(feature_vector)
+predict = cls.predict(feature_vector)
+df["bcluster"] = predict
+# print(df["bcluster"].value_counts())
 
-
+# pre-check
+# print(df[df["bcluster"] == 15].head(5))
+print(df.loc[df["bcluster"] == 15, ["bcluster", "cluster", "course"]].head(10))
