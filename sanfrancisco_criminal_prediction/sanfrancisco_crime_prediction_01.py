@@ -2,9 +2,11 @@ import pandas as pd
 import numpy as np
 from sklearn import metrics
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import GridSearchCV
+import xgboost as xgb
 
 train = pd.read_csv('./train.csv', parse_dates=['Dates'])
 test = pd.read_csv('./test.csv', parse_dates=['Dates'])
@@ -90,8 +92,9 @@ feature_cols = ['X', 'Y', 'IsDay', 'DayOfWeek', 'Month', 'Hour', 'Year', 'InInte
                 'PdDistrict_RICHMOND', 'PdDistrict_SOUTHERN', 'PdDistrict_TARAVAL', 'PdDistrict_TENDERLOIN']
 target_cols = 'CategoryInt'
 
-train_x = train[feature_cols]
-train_y = train[target_cols]
+train_x, val_x, train_y, val_y = train_test_split(train[feature_cols], train[target_cols], test_size=0.5, shuffle=True)
+# train_x = train[feature_cols]
+# train_y = train[target_cols]
 
 test_id = test['Id']
 test_x = test[feature_cols]
@@ -141,11 +144,11 @@ Random Forest
     - aggregating of result(voting)
 
 '''
-
+'''
 from sklearn.ensemble import RandomForestClassifier
 
 # Score :
-clf = RandomForestClassifier(n_estimators=100)
+clf = RandomForestClassifier(n_estimators=10)
 # estimators = 1, Score = 0.21520
 # estimators = 10, Score = 0.28487
 # estimators = 50, Score = 0.30399
@@ -162,3 +165,41 @@ clf.fit(train_x, train_y)
 result = pd.DataFrame(clf.predict_proba(test_x), index=test_x.index, columns=clf.classes_)
 result.to_csv('./submit_randomforest.csv')
 print(result)
+'''
+
+
+
+param = {
+    'max_depth':[2,3,4],
+    'n_estimators':range(550,700,50),
+    'colsample_bytree':[0.5,0.7,1],
+    'colsample_bylevel':[0.5,0.7,1],
+}
+model = xgb.XGBRegressor()
+grid_search = GridSearchCV(estimator=model, param_grid=param, cv=5,
+                           scoring='neg_mean_squared_error',
+                           n_jobs=-1)
+
+grid_search.fit(train_x, train_y)
+print(grid_search.best_params_)
+print(grid_search.best_estimator_)
+
+pred_train = grid_search.predict(train_x)
+pred_val = grid_search.predict(val_x)
+
+print('train mae score: ', metrics.log_loss(train_y, pred_train))
+print('val mae score:', metrics.log_loss(val_y, pred_val))
+
+
+train_xgb = xgb.DMatrix(train_x, label=train_y)
+test_xgb  = xgb.DMatrix(test_x)
+
+print('Fitting Model ...')
+m = xgb.train(param, train_xgb, 10)
+res = m.predict(test_xgb)
+cols = ['Id'] + category_label.classes_
+submission = pd.DataFrame(res, columns=category_label.classes_)
+submission.insert(0, 'Id', test_id)
+submission.to_csv('submission.csv', index=False)
+print('Done Outputing !')
+print(submission.sample(3))
