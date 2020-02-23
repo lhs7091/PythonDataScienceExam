@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd  #
 from lassoRegression import getLassoRegression
 from randomForestRegression import randomForest
+from gradientBoost import gradientBoost
 from sklearn.model_selection import KFold
 
 
@@ -59,6 +60,8 @@ print('lasso: ', optimal_score_lasso)
 
 score_randomForest = randomForest(X, y)
 print('RandomForest:', score_randomForest)
+
+score_gradient = gradientBoost(X,y, kfolds)
 
 '''
 
