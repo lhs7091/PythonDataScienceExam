@@ -51,6 +51,26 @@ print(regressor)
 y_pred = regressor.predict(X_test)
 print(y_pred)
 
+# Building the optimal model using backward Elimination
+# Statsmodels which we will use to compute the values
+# and evaluate the statistical significance(통계적 유의성)
+
+'''
+1. Select a significance level to stay in the model.(e.g. SL = 0.05)
+2. Filt the full model with all possible predictors
+3. Consider the predictor with the highest P-value. If P > SL, go to Step4, otherwise go to FIN
+4. Remove the predictor
+5. Fit model without this variable*
+'''
+import statsmodels.regression.linear_model as sm
+X = np.append(arr = np.ones((50,1)).astype(int), values=X, axis=1)
+X_opt = X[:, [0,1,2,3,4,5]]
+regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
+print(regressor_OLS.summary())
+
+X_opt = X[:, [0,3]]
+regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
+print(regressor_OLS.summary())
 
 
 
