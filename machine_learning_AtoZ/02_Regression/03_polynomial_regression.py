@@ -44,3 +44,10 @@ plt.xlabel('Position level')
 plt.ylabel('Salary')
 
 plt.show()
+
+# Predicting a new result with Linear Regression
+lr.predict([[6.5]]) # In case of 6.5 level
+
+print(lr_2.predict(pr.fit_transform([[6.5]])))
+
+
