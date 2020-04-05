@@ -49,11 +49,24 @@ print(score)
 
 import statsmodels.regression.linear_model as sm
 X = np.append(arr = np.ones((506,1)).astype(int), values=X, axis=1)
-X_opt = X[:, [0,1,2,3,4,5]]
-regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
-print(regressor_OLS.summary())
+X_opt = X[:, [0,1,2,4,5,6,8,9,10,11,12,13]]
+#regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
+#print(regressor_OLS.summary())
 
-X_opt = X[:, [0,1,2,3,4]]
+'''X_opt = X[:, [0,1,2,3,4]]
 regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
-print(regressor_OLS.summary())
+print(regressor_OLS.summary())'''
 
+
+# splitting the dataset into the Training and test set by X_opt
+from sklearn.model_selection import train_test_split
+X_opt_train, X_opt_test, y_train, y_test = train_test_split(X_opt, y, test_size=0.20)
+
+# Fitting Simple Linear Regression to the Training set
+from sklearn.linear_model import LinearRegression
+lr = LinearRegression()
+lr.fit(X_opt_train, y_train)
+#y_opt_pred = lr.predict(X_opt_test)
+
+score = lr.score(X_opt_test, y_test)
+print(score)
