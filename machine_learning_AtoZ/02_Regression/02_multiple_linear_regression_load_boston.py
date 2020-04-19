@@ -40,7 +40,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
 # Fitting Simple Linear Regression to the Training set
 from sklearn.linear_model import LinearRegression
-lr = LinearRegression()
+lr = LinearRegression(normalize=True, n_jobs=1000)
 lr.fit(X_train, y_train)
 y_pred = lr.predict(X_test)
 
