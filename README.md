@@ -18,3 +18,5 @@
         - Implements a procedure for forecasting time series data based on an additive model where non-linear trends are fit with yearly, weekly, and daily seasonality, plus holiday effects.
     2) Install : https://daewonyoon.tistory.com/266
                  https://hdongle.tistory.com/38
+                 
+    3) ubuntu-anaconda install : https://hiseon.me/python/ubuntu-anaconda-install/
